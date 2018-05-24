@@ -2,30 +2,29 @@ package net.kang.main.domain;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class User {
+@Table(name="authdetail")
+public class Detail {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     long id;
-
-    @Column(name="userId")
-    String loginId;
-
-    String password;
 
     String name;
     String address;
+    String email;
+    LocalDateTime birthday;
 
-    @ManyToOne
-    @JoinColumn(name="roleId")
-    Role role;
+    @OneToOne
+    @JoinColumn(name="infoId")
+    Info info;
 }

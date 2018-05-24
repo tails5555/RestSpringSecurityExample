@@ -1,7 +1,5 @@
 package net.kang.main.component;
 
-import net.kang.main.domain.User;
-import net.kang.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,7 +1,9 @@
 package net.kang.main.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import javax.management.relation.Role;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,25 +18,28 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name="authrole")
-public class Role {
+@Table(name="authinfo")
+public class Info {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     @Column(unique=true)
-    String name;
+    String username;
+
+    @JsonIgnore
+    String password;
 
     @ManyToMany
     @JoinTable(
             name="infoandrole",
-            joinColumns=@JoinColumn(name="roleId"),
-            inverseJoinColumns=@JoinColumn(name="infoId"),
+            joinColumns=@JoinColumn(name="infoId"),
+            inverseJoinColumns=@JoinColumn(name="roleId"),
             uniqueConstraints= {
                     @UniqueConstraint(
                             columnNames = {"roleId", "infoId"}
                     )
             }
     )
-    Set<Info> infos;
+    Set<Role> roles;
 }
