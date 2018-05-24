@@ -29,6 +29,6 @@ public class Detail {
     LocalDateTime birthday;
 
     @OneToOne
-    @JoinColumn(name="infoId")
+    @JoinColumn(name="authInfoId")
     Info info;
 }

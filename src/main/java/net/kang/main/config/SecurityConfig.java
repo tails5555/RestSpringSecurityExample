@@ -3,7 +3,6 @@ package net.kang.main.config;
 import net.kang.main.component.AuthProvider;
 import net.kang.main.component.AuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .logout();
 
-        // http.authenticationProvider(authProvider);
+        http.authenticationProvider(authProvider);
     }
 
     @Override
