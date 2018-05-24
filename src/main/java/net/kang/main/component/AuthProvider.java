@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Component
-public class AuthProvider implements AuthenticationProvider {
+public class AuthProvider {
+    /*
     @Autowired UserService userService;
 
     @Override
@@ -67,4 +69,5 @@ public class AuthProvider implements AuthenticationProvider {
             this.user = user;
         }
     }
+    */
 }

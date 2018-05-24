@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .logout();
 
-        http.authenticationProvider(authProvider);
+        // http.authenticationProvider(authProvider);
     }
 
     @Override

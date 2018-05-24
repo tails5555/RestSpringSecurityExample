@@ -2,6 +2,7 @@ package net.kang.main.domain;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +22,10 @@ public class Detail {
 
     String name;
     String address;
+
+    @Column(unique=true)
     String email;
+
     LocalDateTime birthday;
 
     @OneToOne
