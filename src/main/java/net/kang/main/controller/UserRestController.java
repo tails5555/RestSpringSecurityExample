@@ -18,4 +18,8 @@ public class UserRestController {
         return "Login is Successed.";
     }
 
+    @GetMapping("logout")
+    public String logout(){
+        return "Logout is Successed.";
+    }
 }

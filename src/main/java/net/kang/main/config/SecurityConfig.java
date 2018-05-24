@@ -1,9 +1,11 @@
 package net.kang.main.config;
 
+import net.kang.main.component.AuthLoginSuccessHandler;
 import net.kang.main.component.AuthProvider;
 import net.kang.main.component.AuthenticationEntryPoint;
 import net.kang.main.exception.MyAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired AuthProvider authProvider;
     @Autowired AuthenticationEntryPoint authEntryPoint;
+    @Autowired AuthLoginSuccessHandler authLoginSuccessHandler;
     @Autowired MyAccessDeniedHandler myAccessDeniedHandler;
 
     @Override
@@ -25,20 +28,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/manager/**").hasRole("MANAGER")
                 .antMatchers("/user/**").hasRole("USER")
                 .antMatchers("/guest/**").permitAll()
-                .antMatchers("/").permitAll()
-                .antMatchers("/**").authenticated()
-                .and()
-                .httpBasic().authenticationEntryPoint(authEntryPoint)
-                .and()
+                .antMatchers("/").permitAll();
+
+        http
+            .csrf().disable();
+
+        http
+            .httpBasic()
+                .authenticationEntryPoint(authEntryPoint)
+            .and()
                 .exceptionHandling().accessDeniedHandler(myAccessDeniedHandler);
 
-        http.csrf().disable();
 
-        http.formLogin()
-            .and()
-            .logout();
 
         http.authenticationProvider(authProvider);
+
+        http.formLogin()
+                .successHandler(authLoginSuccessHandler)
+            .and()
+            .logout()
+                .logoutUrl("/**/logout");
+    }
+
+    @Bean
+    public AuthLoginSuccessHandler authLoginSuccessHandler() {
+        return new AuthLoginSuccessHandler();
     }
 
     @Override
