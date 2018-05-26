@@ -22,7 +22,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired MyAccessDeniedHandler myAccessDeniedHandler;
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception{
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/manager/**").hasRole("MANAGER")
@@ -35,28 +40,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             .httpBasic()
-                .authenticationEntryPoint(authEntryPoint)
+            .authenticationEntryPoint(authEntryPoint)
             .and()
-                .exceptionHandling().accessDeniedHandler(myAccessDeniedHandler);
+            .exceptionHandling().accessDeniedHandler(myAccessDeniedHandler);
 
 
+        http
+            .authenticationProvider(authProvider);
 
-        http.authenticationProvider(authProvider);
-
-        http.formLogin()
-                .successHandler(authLoginSuccessHandler)
+        http
+            .formLogin()
+            .successHandler(authLoginSuccessHandler)
             .and()
             .logout()
-                .logoutUrl("/**/logout");
+            .logoutUrl("/**/logout");
     }
 
     @Bean
     public AuthLoginSuccessHandler authLoginSuccessHandler() {
         return new AuthLoginSuccessHandler();
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception{
-        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
 }

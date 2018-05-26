@@ -1,5 +1,6 @@
 package net.kang.main.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -26,6 +27,7 @@ public class Role {
     @Column(unique=true)
     String name;
 
+    @JsonIgnore
     @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(
             name="infoandrole",
