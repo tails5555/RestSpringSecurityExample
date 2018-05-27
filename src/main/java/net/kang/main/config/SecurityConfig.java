@@ -33,6 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/manager/**").hasRole("MANAGER")
                 .antMatchers("/user/**").hasRole("USER")
+                .antMatchers("/common/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .antMatchers("/guest/**").permitAll()
                 .antMatchers("/").permitAll();
 
@@ -52,10 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .formLogin()
             .successHandler(authLoginSuccessHandler)
-            .failureHandler(authLoginFailureHandler())
-            .and()
-            .logout()
-            .logoutUrl("/**/logout");
+            .failureHandler(authLoginFailureHandler());
     }
 
     @Bean

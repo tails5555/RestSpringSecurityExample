@@ -13,13 +13,14 @@ import net.kang.main.repository.RoleRepository;
 import net.kang.main.util.Encryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -48,8 +49,6 @@ public class UserServiceImpl implements UserService {
         }
         return userVOList;
     }
-
-
 
     @Override
     public String findUsername(final NameEmailVO nameEmailVO){
@@ -138,5 +137,36 @@ public class UserServiceImpl implements UserService {
             infoRepository.deleteByUsername(username);
             return true;
         }else return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteForManager(final String username){
+        Optional<Detail> detail = detailRepository.findByInfoUsername(username);
+        if(detail.isPresent()){
+            Detail tmpDetail = detail.get();
+            List<Role> roles = tmpDetail.getInfo().getRoles();
+            boolean isDeleted = false;
+            for(Role role : roles){
+                if(role.getName().equals("USER") && roles.size()==1) isDeleted = true;
+            }
+            if(isDeleted) {
+                detailRepository.delete(tmpDetail);
+                infoRepository.deleteByUsername(username);
+            }
+            return true;
+        }else return false;
+    }
+
+    @Override
+    public Map<Role, Long> countWithManagerAndUser(){
+        Map<Role, Long> result = new HashMap<>();
+        List<Role> roles = roleRepository.findAll();
+        for(Role role : roles){
+            if(role.getName().equals("USER") || role.getName().equals("MANAGER")){
+                result.put(role, infoRepository.countByRolesContains(role));
+            }
+        }
+        return result;
     }
 }

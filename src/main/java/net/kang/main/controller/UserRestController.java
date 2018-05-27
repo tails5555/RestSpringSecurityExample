@@ -29,22 +29,29 @@ public class UserRestController {
 
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
-        return new ResponseEntity<String>("Login is Successed.", HttpStatus.OK);
+        return new ResponseEntity<String>("User Login is Successed.", HttpStatus.OK);
     }
 
-    @GetMapping("user_profile")
-    public ResponseEntity<UserVO> userProfile(Principal principal){
+    @GetMapping("profile")
+    public ResponseEntity<?> profile(Principal principal){
         UserVO userVO = userService.findByUsername(principal.getName());
-        return new ResponseEntity<UserVO>(userVO, HttpStatus.OK);
+        if(userVO!=null)
+            return new ResponseEntity<UserVO>(userVO, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("logout")
-    public ResponseEntity<String> logout(){
-        return new ResponseEntity<String>("Logout is Successed.", HttpStatus.OK);
+    @DeleteMapping("logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return new ResponseEntity<String>("User Logout is Successed.", HttpStatus.OK);
     }
 
-    @PutMapping("user_update")
-    public ResponseEntity<String> userUpdate(Principal principal, @RequestBody DetailVO detailVO){
+    @PutMapping("update")
+    public ResponseEntity<String> update(Principal principal, @RequestBody DetailVO detailVO){
         if(userService.update(principal.getName(), detailVO)){
             return new ResponseEntity<String>("User Update is Successed.", HttpStatus.OK);
         }else{
@@ -52,8 +59,8 @@ public class UserRestController {
         }
     }
 
-    @DeleteMapping("user_delete")
-    public ResponseEntity<String> userDelete(HttpServletRequest request, HttpServletResponse response, Principal principal){
+    @DeleteMapping("delete")
+    public ResponseEntity<String> delete(HttpServletRequest request, HttpServletResponse response, Principal principal){
         if(userService.delete(principal.getName())){
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null){

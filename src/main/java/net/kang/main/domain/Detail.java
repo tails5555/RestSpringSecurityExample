@@ -1,6 +1,7 @@
 package net.kang.main.domain;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Data
+@ToString(exclude={"info"})
 @Entity
 @Table(name="authdetail")
 public class Detail {
