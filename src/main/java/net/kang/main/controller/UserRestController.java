@@ -40,35 +40,4 @@ public class UserRestController {
         else
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
-
-    @DeleteMapping("logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
-        return new ResponseEntity<String>("User Logout is Successed.", HttpStatus.OK);
-    }
-
-    @PutMapping("update")
-    public ResponseEntity<String> update(Principal principal, @RequestBody DetailVO detailVO){
-        if(userService.update(principal.getName(), detailVO)){
-            return new ResponseEntity<String>("User Update is Successed.", HttpStatus.OK);
-        }else{
-            return new ResponseEntity<String>("User Update is Failured. User is Not Existed.", HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @DeleteMapping("delete")
-    public ResponseEntity<String> delete(HttpServletRequest request, HttpServletResponse response, Principal principal){
-        if(userService.delete(principal.getName())){
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null){
-                new SecurityContextLogoutHandler().logout(request, response, auth);
-            }
-            return new ResponseEntity<String>(String.format("User Delete is Successed -> %s", principal.getName()), HttpStatus.OK);
-        }else{
-            return new ResponseEntity<String>("User Delete is Failure.", HttpStatus.NOT_FOUND);
-        }
-    }
 }
