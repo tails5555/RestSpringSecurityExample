@@ -3,7 +3,7 @@ package net.kang.main.component;
 import net.kang.main.enums.RoleType;
 import net.kang.main.domain.Role;
 import net.kang.main.model.UserVO;
-import net.kang.main.service.UserService;
+import net.kang.main.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Component
 public class AuthProvider implements AuthenticationProvider{
-    @Autowired UserService userService;
+    @Autowired LoginService loginService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -29,7 +29,7 @@ public class AuthProvider implements AuthenticationProvider{
     }
 
     public Authentication authenticate(String loginId, String passwd) throws AuthenticationException{
-        UserVO user = userService.login(loginId, passwd);
+        UserVO user = loginService.login(loginId, passwd);
         if(user == null) return null;
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();

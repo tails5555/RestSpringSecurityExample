@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface InfoRepository extends JpaRepository<Info, Long> {
     public Optional<Info> findByUsername(String username);
+    void deleteByUsername(String username);
 }

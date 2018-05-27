@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -51,13 +52,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .formLogin()
             .successHandler(authLoginSuccessHandler)
+            .failureHandler(authLoginFailureHandler())
             .and()
             .logout()
             .logoutUrl("/**/logout");
     }
 
     @Bean
-    public AuthLoginSuccessHandler authLoginSuccessHandler() {
-        return new AuthLoginSuccessHandler();
+    public SimpleUrlAuthenticationFailureHandler authLoginFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler();
     }
 }

@@ -4,6 +4,7 @@ import net.kang.main.domain.Detail;
 import net.kang.main.domain.Info;
 import net.kang.main.domain.Role;
 import net.kang.main.model.DetailVO;
+import net.kang.main.model.NameEmailVO;
 import net.kang.main.model.SignVO;
 import net.kang.main.model.UserVO;
 import net.kang.main.repository.DetailRepository;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Autowired RoleRepository roleRepository;
 
     @Override
-    public UserVO findByUsername(String username){
+    public UserVO findByUsername(final String username){
         Optional<Info> tmpInfo =  infoRepository.findByUsername(username);
         if(tmpInfo.isPresent()){
             Info info = tmpInfo.get();
@@ -48,21 +49,25 @@ public class UserServiceImpl implements UserService {
         return userVOList;
     }
 
+
+
     @Override
-    public UserVO login(String username, String password){
-        if(username==null || username.isEmpty()) throw new UsernameNotFoundException("User Name is Null.");
-        Optional<Info> tmpInfo = infoRepository.findByUsername(username);
-        if(!tmpInfo.isPresent()) throw new UsernameNotFoundException("User Detail is Not Existed.");
-        Info info = tmpInfo.get();
-        if(!info.getPassword().equals(Encryption.encrypt(password, Encryption.MD5))) throw new UsernameNotFoundException("User Password is Wrong.");
-        else return UserVO.buildByInfo(info);
+    public String findUsername(final NameEmailVO nameEmailVO){
+        Optional<Detail> detail = detailRepository.findByNameAndEmail(nameEmailVO.getName(), nameEmailVO.getEmail());
+        if(detail.isPresent()){
+            Detail tmpDetail = detail.get();
+            return tmpDetail.getInfo().getUsername();
+        }else{
+            return null;
+        }
     }
 
     @Override
     @Transactional
-    public boolean update(String username, DetailVO detailVO){
+    public boolean update(final String username, final DetailVO detailVO){
         Optional<Info> info = infoRepository.findByUsername(username);
         Optional<Detail> detail = detailRepository.findByInfoUsername(username);
+        Optional<Detail> emailDetail = detailRepository.findByEmail(detailVO.getEmail());
         // 사용자 정보와 로그인 정보가 존재하는지 확인한다.
         if(detail.isPresent() && info.isPresent()){
             // 1단계. 이전 비밀번호를 확인한다. 올바르게 확인되었으면 변경을 하고, 아니면 인증 예외를 던진다.
@@ -75,9 +80,15 @@ public class UserServiceImpl implements UserService {
 
             // 2단계. 사용자 정보를 갱신한다.
             Detail tmpDetail = detail.get();
+
             tmpDetail.setAddress(detailVO.getAddress());
             tmpDetail.setBirthday(detailVO.getBirthday());
-            tmpDetail.setEmail(detailVO.getEmail());
+            if(!emailDetail.isPresent())
+                tmpDetail.setEmail(detailVO.getEmail());
+            else if(detailVO.getEmail().equals(tmpDetail.getEmail()))
+                tmpDetail.setEmail(detailVO.getEmail());
+            else
+                throw new AuthenticationServiceException("This E-Mail is Existed. Try Again.");
             detailRepository.save(tmpDetail);
 
             return true;
@@ -88,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean create(SignVO signVO){
+    public boolean create(final SignVO signVO){
         Optional<Role> userRole = roleRepository.findByName("USER");
         List<Role> role = Arrays.asList(userRole.get());
 
@@ -106,10 +117,26 @@ public class UserServiceImpl implements UserService {
             newInfo.setRoles(role);
             Info insertInfo = infoRepository.save(newInfo);
 
-            Detail detail = SignVO.builtByDetail(insertInfo, signVO);
-            detailRepository.save(detail);
-
+            Optional<Detail> detail = detailRepository.findByEmail(signVO.getEmail());
+            if(!detail.isPresent()) {
+                Detail newDetail = SignVO.builtByDetail(insertInfo, signVO);
+                detailRepository.save(newDetail);
+            }else{
+                throw new AuthenticationServiceException("E-Mail is Existed. Try Again.");
+            }
             return true;
         }
+    }
+
+    @Override
+    @Transactional
+    public boolean delete(final String username){
+        Optional<Detail> detail = detailRepository.findByInfoUsername(username);
+        if(detail.isPresent()){
+            Detail tmpDetail = detail.get();
+            detailRepository.delete(tmpDetail);
+            infoRepository.deleteByUsername(username);
+            return true;
+        }else return false;
     }
 }
