@@ -2,6 +2,7 @@ package net.kang.main.controller;
 
 import net.kang.main.domain.Role;
 import net.kang.main.model.DetailVO;
+import net.kang.main.model.UserVO;
 import net.kang.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,6 +34,16 @@ public class ManagerRestController {
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
         return new ResponseEntity<String>("Manager Login is Successed.", HttpStatus.OK);
+    }
+
+    @GetMapping("sameList")
+    public ResponseEntity<?> getSameRoleUsers(Principal principal){
+        List<UserVO> userVOList = userService.findForSameLayers(principal.getName());
+        if(!userVOList.isEmpty()){
+            return new ResponseEntity<List<UserVO>>(userVOList, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<List<UserVO>>(userVOList, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("count")

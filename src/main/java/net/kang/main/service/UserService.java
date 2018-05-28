@@ -9,8 +9,10 @@ import net.kang.main.model.UserVO;
 import java.util.List;
 import java.util.Map;
 
+// UserService 인터페이스
 public interface UserService {
     public UserVO findByUsername(String username);
+    public List<UserVO> findForSameLayers(String username);
     public List<UserVO> findAll();
     public String findUsername(NameEmailVO nameEmailVO);
     public boolean update(String username, DetailVO detailVO);

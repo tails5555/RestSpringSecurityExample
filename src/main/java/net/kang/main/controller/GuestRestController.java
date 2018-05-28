@@ -13,17 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// 비회원이 할 수 있는 행위를 구현한 REST Controller 클래스이다.
 @RestController
 @CrossOrigin
 @RequestMapping("guest")
 public class GuestRestController {
     @Autowired UserService userService;
 
+    // 현재 비회원으로 접속할 때 HELLO WORLD 정도 출력하는 실험.
     @GetMapping("main")
     public ResponseEntity<String> main(){
-        return new ResponseEntity<String>("Welcome To Spring Security Test", HttpStatus.OK);
+        return new ResponseEntity<String>("Welcome To Spring Security Test. Please Login!", HttpStatus.OK);
     }
 
+    // 회원 가입 작업
     @PostMapping("sign")
     public ResponseEntity<String> sign(@RequestBody SignVO signVO){
         if(userService.create(signVO)){
@@ -33,6 +36,8 @@ public class GuestRestController {
         }
     }
 
+    // 본인 이름과 E-Mail로 회원 이름 정보 탐색.
+    // Postman은 GET Method에서 RequestBody를 제공하지 않는 단점이 있어서 POST 방식으로 주고 받음.
     @PostMapping("find_username")
     public ResponseEntity<String> findUsername(@RequestBody NameEmailVO nameEmailVO){
         String context = userService.findUsername(nameEmailVO);

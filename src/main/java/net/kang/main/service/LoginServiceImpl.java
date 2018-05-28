@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+// LoginService 구현체 클래스
 @Service
 public class LoginServiceImpl implements LoginService{
     @Autowired InfoRepository infoRepository;
+
+    // 사용자 ID와 비밀번호를 이용한 로그인 기능 구현
     @Override
     public UserVO login(final String username, final String password){
         if(username==null || username.isEmpty()) throw new UsernameNotFoundException("User Name is Null.");
