@@ -2,6 +2,7 @@ package net.kang.main.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Data
 @ToString(exclude={"infos"})
+@EqualsAndHashCode(exclude={"infos"})
 @Entity
 @Table(name="authrole")
 public class Role {

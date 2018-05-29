@@ -150,6 +150,32 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public boolean roleUpdate(String username, String role, boolean isPlus){
+        Optional<Info> info =  infoRepository.findByUsername(username);
+        Optional<Role> tmpRole = roleRepository.findByName(role);
+        if(!tmpRole.isPresent())
+            throw new AuthenticationServiceException("Invalid Roles! Try Again!");
+        if(info.isPresent()) {
+            Info tmpInfo = info.get();
+            List<Role> roles = tmpInfo.getRoles();
+            if(isPlus){
+                Role addRole = tmpRole.get();
+                if(!roles.contains(addRole))
+                    roles.add(addRole);
+                tmpInfo.setRoles(roles);
+                infoRepository.save(tmpInfo);
+            }else {
+                Role removeRole = tmpRole.get();
+                if (roles.contains(removeRole))
+                    roles.remove(removeRole);
+                tmpInfo.setRoles(roles);
+                infoRepository.save(tmpInfo);
+            }
+            return true;
+        }else return false;
+    }
+
     // 회원 가입 정보를 추가한다.
     @Override
     @Transactional

@@ -1,7 +1,6 @@
 package net.kang.main.controller;
 
 import net.kang.main.domain.Role;
-import net.kang.main.model.UserVO;
 import net.kang.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

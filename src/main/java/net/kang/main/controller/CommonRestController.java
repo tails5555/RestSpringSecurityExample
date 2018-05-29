@@ -1,6 +1,5 @@
 package net.kang.main.controller;
 
-import net.kang.main.component.AuthProvider.TokenAuthentication;
 import net.kang.main.model.DetailVO;
 import net.kang.main.model.UserVO;
 import net.kang.main.service.UserService;

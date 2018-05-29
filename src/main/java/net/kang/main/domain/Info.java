@@ -2,6 +2,7 @@ package net.kang.main.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Data
 @ToString(exclude={"password", "detail", "roles"})
+@EqualsAndHashCode(exclude={"password", "detail", "roles"})
 @Entity
 @Table(name="authinfo")
 public class Info {

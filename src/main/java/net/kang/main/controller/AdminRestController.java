@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,5 +56,17 @@ public class AdminRestController {
         }else{
             return new ResponseEntity<String>("Another User Delete is Failure.", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping("role_plus/{username}/{role}")
+    public ResponseEntity<String> rolePlus(@PathVariable("username") String username, @PathVariable String role){
+        userService.roleUpdate(username, role, true);
+        return new ResponseEntity<String>(String.format("User Role Adding Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
+    }
+
+    @PutMapping("role_minus/{username}/{role}")
+    public ResponseEntity<String> roleMinus(@PathVariable("username") String username, @PathVariable String role){
+        userService.roleUpdate(username, role, false);
+        return new ResponseEntity<String>(String.format("User Role Removing Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
     }
 }

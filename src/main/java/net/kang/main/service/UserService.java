@@ -16,7 +16,7 @@ public interface UserService {
     public List<UserVO> findAll();
     public String findUsername(NameEmailVO nameEmailVO);
     public boolean update(String username, DetailVO detailVO);
-    // public boolean roleUpdate(String username, List<String> roleNames);
+    public boolean roleUpdate(String username, String role, boolean plus);
     public boolean create(SignVO signVO);
     public boolean delete(String username);
     public boolean deleteForManager(String username);

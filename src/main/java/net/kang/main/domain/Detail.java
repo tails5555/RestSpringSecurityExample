@@ -1,6 +1,7 @@
 package net.kang.main.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 
 @Data
 @ToString(exclude={"info"})
+@EqualsAndHashCode(exclude={"info"})
 @Entity
 @Table(name="authdetail")
 public class Detail {
