@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // 동급의 회원 세부 정보를 반환한다.
     @Override
     public List<UserVO> findForSameLayers(final String username){
         Optional<Info> tmpInfo =  infoRepository.findByUsername(username);
@@ -216,7 +217,7 @@ public class UserServiceImpl implements UserService {
         }else return false;
     }
 
-    // 회원 이름으로 강제 탈퇴하는 기능을 구현한다. 이 기능은 MANAGER와 ADMIN에게 부여되는 기능인데 MANAGER는 USER 권한만 가진 사람을 강퇴, ADMIN은 ADMIN, USER 둘 중 하나를 강퇴하는 역할을 한다.
+    // 회원 ID로 강제 탈퇴하는 기능을 구현한다. 이 기능은 MANAGER에게 부여되는 기능인데 MANAGER는 USER 권한만 가진 사람을 강퇴한다.
     @Override
     @Transactional
     public boolean deleteForManager(final String username){
@@ -247,5 +248,21 @@ public class UserServiceImpl implements UserService {
             }
         }
         return result;
+    }
+
+    // 관리자가 권한 별 모든 회원의 수를 파악할 수 있는 기능을 추가하였다.
+    @Override
+    public Map<Role, Long> countWithAll(){
+        Map<Role, Long> result = new HashMap<>();
+        List<Role> roles = roleRepository.findAll();
+        for(Role role : roles){
+            result.put(role, infoRepository.countByRolesContains(role));
+        }
+        return result;
+    }
+
+    @Override
+    public long count(){
+        return infoRepository.count();
     }
 }

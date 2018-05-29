@@ -1,5 +1,6 @@
 package net.kang.main.controller;
 
+import net.kang.main.component.AuthProvider.TokenAuthentication;
 import net.kang.main.model.DetailVO;
 import net.kang.main.model.UserVO;
 import net.kang.main.service.UserService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.List;
 
 // 공동의 사용자(USER, MANAGER, ADMIN)들이 할 수 있는 행위를 구현한 REST Controller 클래스이다.
 @RestController
@@ -70,6 +72,17 @@ public class CommonRestController {
             return new ResponseEntity<String>(String.format("User Delete is Successed -> %s", principal.getName()), HttpStatus.OK);
         }else{
             return new ResponseEntity<String>("User Delete is Failure.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 서로 같은 권한을 가진 회원 목록 반환
+    @GetMapping("sameList")
+    public ResponseEntity<?> getSameRoleUsers(Principal principal){
+        List<UserVO> userVOList = userService.findForSameLayers(principal.getName());
+        if(!userVOList.isEmpty()){
+            return new ResponseEntity<List<UserVO>>(userVOList, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<List<UserVO>>(userVOList, HttpStatus.NOT_FOUND);
         }
     }
 }

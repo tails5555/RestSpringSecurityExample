@@ -16,8 +16,11 @@ public interface UserService {
     public List<UserVO> findAll();
     public String findUsername(NameEmailVO nameEmailVO);
     public boolean update(String username, DetailVO detailVO);
+    // public boolean roleUpdate(String username, List<String> roleNames);
     public boolean create(SignVO signVO);
     public boolean delete(String username);
     public boolean deleteForManager(String username);
     public Map<Role, Long> countWithManagerAndUser();
+    public Map<Role, Long> countWithAll();
+    public long count();
 }

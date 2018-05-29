@@ -1,5 +1,6 @@
 package net.kang.main.controller;
 
+import net.kang.main.component.AuthProvider;
 import net.kang.main.model.NameEmailVO;
 import net.kang.main.model.SignVO;
 import net.kang.main.service.UserService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("guest")
 public class GuestRestController {
     @Autowired UserService userService;
+    @Autowired AuthProvider authProvider;
 
     // 현재 비회원으로 접속할 때 HELLO WORLD 정도 출력하는 실험.
     @GetMapping("main")
