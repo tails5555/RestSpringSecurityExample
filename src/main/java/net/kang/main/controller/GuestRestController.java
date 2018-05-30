@@ -34,7 +34,7 @@ public class GuestRestController {
         if(userService.create(signVO)){
             return new ResponseEntity<String>("User Create is Successed.", HttpStatus.CREATED);
         }else{
-            return new ResponseEntity<String>("User Create is Failured. Password is Wrong..", HttpStatus.NOT_MODIFIED);
+            return new ResponseEntity<String>("User Create is Failured. Password is Wrong...", HttpStatus.NOT_MODIFIED);
         }
     }
 

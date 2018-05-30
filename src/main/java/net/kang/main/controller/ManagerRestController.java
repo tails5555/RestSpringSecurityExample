@@ -5,6 +5,7 @@ import net.kang.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +21,20 @@ import java.util.Map;
 public class ManagerRestController {
     @Autowired UserService userService;
 
+    @Secured("ROLE_MANAGER")
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
         return new ResponseEntity<String>("Manager Login is Successed.", HttpStatus.OK);
     }
 
+    @Secured("ROLE_MANAGER")
     @GetMapping("count/role")
     public ResponseEntity<Map<Role, Long>> counting(){
         Map<Role, Long> countMap = userService.countWithManagerAndUser();
         return new ResponseEntity<>(countMap, HttpStatus.OK);
     }
 
+    @Secured("ROLE_MANAGER")
     @DeleteMapping("delete/{username}")
     public ResponseEntity<String> deleteAnotherUser(@PathVariable("username") String username){
         if(userService.deleteForManager(username)){

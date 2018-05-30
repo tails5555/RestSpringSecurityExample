@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 // 일반 사용자(USER)들이 할 수 있는 행위를 구현한 REST Controller 클래스이다.
 @RestController
-@Secured("ROLE_USER")
 @RequestMapping("user")
 public class UserRestController {
     @Autowired UserService userService;
 
     // USER ROLE로 접속할 때 HELLO WORLD 정도 출력하는 실험.
+    @Secured("ROLE_USER")
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
         return new ResponseEntity<String>("User Login is Successed.", HttpStatus.OK);

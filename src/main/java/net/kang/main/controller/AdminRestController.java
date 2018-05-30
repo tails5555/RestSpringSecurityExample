@@ -6,6 +6,7 @@ import net.kang.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +25,13 @@ import java.util.Map;
 public class AdminRestController {
     @Autowired UserService userService;
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
         return new ResponseEntity<String>("Admin Login is Successed.", HttpStatus.OK);
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("all_users")
     public ResponseEntity<List<UserVO>> allUsers(){
         List<UserVO> userVOList = userService.findAll();
@@ -36,6 +39,7 @@ public class AdminRestController {
         else return new ResponseEntity<List<UserVO>>(userVOList, HttpStatus.NOT_FOUND);
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("count")
     public ResponseEntity<Long> counting(){
         long result = userService.count();
@@ -43,12 +47,14 @@ public class AdminRestController {
         else return new ResponseEntity<Long>(0L, HttpStatus.NOT_FOUND);
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("count/role")
     public ResponseEntity<Map<Role, Long>> countingWithRole(){
         Map<Role, Long> countMap = userService.countWithAll();
         return new ResponseEntity<>(countMap, HttpStatus.OK);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("delete/{username}")
     public ResponseEntity<String> deleteAnotherUser(@PathVariable("username") String username){
         if(userService.delete(username)){
@@ -58,12 +64,14 @@ public class AdminRestController {
         }
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("role_plus/{username}/{role}")
     public ResponseEntity<String> rolePlus(@PathVariable("username") String username, @PathVariable String role){
         userService.roleUpdate(username, role, true);
         return new ResponseEntity<String>(String.format("User Role Adding Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("role_minus/{username}/{role}")
     public ResponseEntity<String> roleMinus(@PathVariable("username") String username, @PathVariable String role){
         userService.roleUpdate(username, role, false);

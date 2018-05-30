@@ -88,7 +88,7 @@ spring.datasource.password=[DB 사용자 비밀번호]
 <--! Hibernate JPA를 적용하기 위한 설정 -->
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
-<--! Hibernate JPA에 대해 SQL 결과를 인지하기 위한 문장. Debug를 통해 일일히 확인 시킨다. --> 
+<--! Hibernate JPA에 대해 SQL 결과를 인지하기 위한 문장. DEBUG를 통해 일일히 확인 시킨다. --> 
 logging.level.org.hibernate.SQL=DEBUG
 
 <--! Hibernate JPA에 대해서 SQL의 기본 문장에 대해 TRACE 단계를 통해 확인을 시켜준다. -->

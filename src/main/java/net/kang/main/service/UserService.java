@@ -5,6 +5,7 @@ import net.kang.main.model.DetailVO;
 import net.kang.main.model.NameEmailVO;
 import net.kang.main.model.SignVO;
 import net.kang.main.model.UserVO;
+import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
 import java.util.Map;

@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean roleUpdate(String username, String role, boolean isPlus){
         Optional<Info> info =  infoRepository.findByUsername(username);
-        Optional<Role> tmpRole = roleRepository.findByName(role);
+        Optional<Role> tmpRole = roleRepository.findByName(role.toUpperCase());
         if(!tmpRole.isPresent())
             throw new AuthenticationServiceException("Invalid Roles! Try Again!");
         if(info.isPresent()) {

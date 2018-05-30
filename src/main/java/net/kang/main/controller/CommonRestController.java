@@ -6,6 +6,7 @@ import net.kang.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -30,6 +31,7 @@ public class CommonRestController {
     @Autowired UserService userService;
 
     // 로그아웃 작업
+    @Secured({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @DeleteMapping("logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response, Principal principal){
         String logoutMessage = String.format("User Logout is Successed -> %s", principal.getName());
@@ -41,6 +43,7 @@ public class CommonRestController {
     }
 
     // 본인 정보 확인
+    @Secured({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("profile")
     public ResponseEntity<?> profile(Principal principal){
         UserVO userVO = userService.findByUsername(principal.getName());
@@ -51,6 +54,7 @@ public class CommonRestController {
     }
 
     // 본인 정보 수정
+    @Secured({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PutMapping("update")
     public ResponseEntity<String> update(Principal principal, @RequestBody DetailVO detailVO){
         if(userService.update(principal.getName(), detailVO)){
@@ -61,6 +65,7 @@ public class CommonRestController {
     }
 
     // 본인 탈퇴
+    @Secured({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @DeleteMapping("delete")
     public ResponseEntity<String> delete(HttpServletRequest request, HttpServletResponse response, Principal principal){
         if(userService.delete(principal.getName())){
