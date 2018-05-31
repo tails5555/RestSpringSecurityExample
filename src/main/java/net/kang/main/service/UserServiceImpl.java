@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -179,7 +180,7 @@ public class UserServiceImpl implements UserService {
     // 회원 가입 정보를 추가한다.
     @Override
     @Transactional
-    public boolean create(final SignVO signVO){
+    public boolean create(final SignVO signVO) throws ServletException{
         // 초기 회원은 일반 USER로 설정하게 한다.
         Optional<Role> userRole = roleRepository.findByName("USER");
         List<Role> role = Arrays.asList(userRole.get());
@@ -188,7 +189,7 @@ public class UserServiceImpl implements UserService {
         Optional<Info> info = infoRepository.findByUsername(signVO.getUsername());
 
         if(info.isPresent()){ // 만일 사용자가 존재한다면 예외 처리를 한다.
-            throw new AuthenticationServiceException("Username is Existed. Try Again.");
+            throw new ServletException("Username is Existed. Try Again.");
         }else{
             // 사용자 정보가 존재하지 않으면 회원 등록을 시작한다.
             Info newInfo = new Info();
@@ -221,7 +222,7 @@ public class UserServiceImpl implements UserService {
 
             // E-Mail이 존재한다면 예외 처리를 한다.
             else{
-                throw new AuthenticationServiceException("E-Mail is Existed. Try Again.");
+                throw new ServletException("E-Mail is Existed. Try Again.");
             }
             return true;
         }

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
+
 // 비회원이 할 수 있는 행위를 구현한 REST Controller 클래스이다.
 @RestController
 @CrossOrigin
@@ -30,7 +32,7 @@ public class GuestRestController {
 
     // 회원 가입 작업
     @PostMapping("sign")
-    public ResponseEntity<String> sign(@RequestBody SignVO signVO){
+    public ResponseEntity<String> sign(@RequestBody SignVO signVO) throws ServletException {
         if(userService.create(signVO)){
             return new ResponseEntity<String>("User Create is Successed.", HttpStatus.CREATED);
         }else{

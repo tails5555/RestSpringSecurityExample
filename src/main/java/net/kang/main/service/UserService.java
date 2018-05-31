@@ -7,6 +7,7 @@ import net.kang.main.model.SignVO;
 import net.kang.main.model.UserVO;
 import org.springframework.security.access.annotation.Secured;
 
+import javax.servlet.ServletException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public interface UserService {
     public String findUsername(NameEmailVO nameEmailVO);
     public boolean update(String username, DetailVO detailVO);
     public boolean roleUpdate(String username, String role, boolean plus);
-    public boolean create(SignVO signVO);
+    public boolean create(SignVO signVO) throws ServletException;
     public boolean delete(String username);
     public boolean deleteForManager(String username);
     public Map<Role, Long> countWithManagerAndUser();

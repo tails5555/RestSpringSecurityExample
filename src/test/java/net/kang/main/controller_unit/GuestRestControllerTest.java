@@ -10,32 +10,33 @@ import net.kang.main.component.AuthProvider;
 import net.kang.main.component.AuthenticationEntryPoint;
 import net.kang.main.controller.GuestRestController;
 import net.kang.main.exception.MyAccessDeniedHandler;
+import net.kang.main.model.NameEmailVO;
 import net.kang.main.model.SignVO;
-import net.kang.main.model.UserVO;
 import net.kang.main.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.Filter;
+import javax.servlet.ServletException;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,8 +62,8 @@ public class GuestRestControllerTest {
 
     private String jsonStringFromObject(Object object) throws JsonProcessingException {
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
-                .serializationInclusion(JsonInclude.Include.NON_NULL) // Don’t include null values
-                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) //ISODate
+                .serializationInclusion(JsonInclude.Include.NON_NULL)
+                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .modules(new JSR310Module())
                 .build();
         return objectMapper.writeValueAsString(object);
@@ -81,6 +82,13 @@ public class GuestRestControllerTest {
         return signVO;
     }
 
+    private NameEmailVO createNameEmailVO(String name, String email){
+        NameEmailVO nameEmailVO = new NameEmailVO();
+        nameEmailVO.setName(name);
+        nameEmailVO.setEmail(email);
+        return nameEmailVO;
+    }
+
     @Before
     public void setUp() throws Exception{
         this.mockMvc = MockMvcBuilders
@@ -89,6 +97,7 @@ public class GuestRestControllerTest {
                 .alwaysDo(print())
                 .apply(SecurityMockMvcConfigurers.springSecurity(springSecurityFilterChain))
                 .build();
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -125,15 +134,36 @@ public class GuestRestControllerTest {
                 .andExpect(status().isNotModified());
     }
 
-    @Test(expected = AuthenticationServiceException.class)
+    @Test(expected = ServletException.class)
     public void guest_sign_exception() throws Exception{
         SignVO signVO = this.createSignVO("test3", "testing", "testing", "tester", "tester@test.com", LocalDateTime.now(), "suwon");
-        when(userService.create(signVO)).thenThrow(new AuthenticationServiceException("Username is Existed. Try Again."));
+        doThrow(new ServletException("Username is Existed. Try Again.")).when(userService).create(signVO);
         mockMvc
                 .perform(post("/guest/sign")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .content(jsonStringFromObject(signVO))
-                )
-                .andExpect(status().isUnauthorized());
+                ).andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void guest_find_username_success() throws Exception{
+        NameEmailVO nameEmailVO = this.createNameEmailVO("tester", "tester@test.com");
+        when(userService.findUsername(nameEmailVO)).thenReturn("tester_id");
+        mockMvc
+                .perform(post("/guest/find_username")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(jsonStringFromObject(nameEmailVO))
+                ).andExpect(status().isOk());
+    }
+
+    @Test
+    public void guest_find_username_failure() throws Exception{
+        NameEmailVO nameEmailVO = this.createNameEmailVO("tester", "tester@test.com");
+        when(userService.findUsername(nameEmailVO)).thenReturn(null);
+        mockMvc
+                .perform(post("/guest/find_username")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(jsonStringFromObject(nameEmailVO))
+                ).andExpect(status().isNotFound());
     }
 }
