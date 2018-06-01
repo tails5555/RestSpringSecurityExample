@@ -16,9 +16,9 @@ public interface UserService {
     public UserVO findByUsername(String username);
     public List<UserVO> findForSameLayers(String username);
     public List<UserVO> findAll();
-    public String findUsername(NameEmailVO nameEmailVO);
-    public boolean update(String username, DetailVO detailVO);
-    public boolean roleUpdate(String username, String role, boolean plus);
+    public String findByNameAndEmail(NameEmailVO nameEmailVO);
+    public boolean update(String username, DetailVO detailVO) throws ServletException;
+    public boolean roleUpdate(String username, String role, boolean plus) throws ServletException;
     public boolean create(SignVO signVO) throws ServletException;
     public boolean delete(String username);
     public boolean deleteForManager(String username);

@@ -44,7 +44,7 @@ public class GuestRestController {
     // Postman은 GET Method에서 RequestBody를 제공하지 않는 단점이 있어서 POST 방식으로 주고 받음.
     @PostMapping("find_username")
     public ResponseEntity<String> findUsername(@RequestBody NameEmailVO nameEmailVO){
-        String context = userService.findUsername(nameEmailVO);
+        String context = userService.findByNameAndEmail(nameEmailVO);
         if(context!=null){
             return new ResponseEntity<String>(context, HttpStatus.OK);
         }else{

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
 import java.util.List;
 import java.util.Map;
 
@@ -66,14 +67,14 @@ public class AdminRestController {
 
     @Secured("ROLE_ADMIN")
     @PutMapping("role_plus/{username}/{role}")
-    public ResponseEntity<String> rolePlus(@PathVariable("username") String username, @PathVariable String role){
+    public ResponseEntity<String> rolePlus(@PathVariable("username") String username, @PathVariable String role) throws ServletException{
         userService.roleUpdate(username, role, true);
         return new ResponseEntity<String>(String.format("User Role Adding Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
     }
 
     @Secured("ROLE_ADMIN")
     @PutMapping("role_minus/{username}/{role}")
-    public ResponseEntity<String> roleMinus(@PathVariable("username") String username, @PathVariable String role){
+    public ResponseEntity<String> roleMinus(@PathVariable("username") String username, @PathVariable String role) throws ServletException {
         userService.roleUpdate(username, role, false);
         return new ResponseEntity<String>(String.format("User Role Removing Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
     }

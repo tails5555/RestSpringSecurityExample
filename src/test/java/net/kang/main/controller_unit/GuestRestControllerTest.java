@@ -148,7 +148,7 @@ public class GuestRestControllerTest {
     @Test
     public void guest_find_username_success() throws Exception{
         NameEmailVO nameEmailVO = this.createNameEmailVO("tester", "tester@test.com");
-        when(userService.findUsername(nameEmailVO)).thenReturn("tester_id");
+        when(userService.findByNameAndEmail(nameEmailVO)).thenReturn("tester_id");
         mockMvc
                 .perform(post("/guest/find_username")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -159,7 +159,7 @@ public class GuestRestControllerTest {
     @Test
     public void guest_find_username_failure() throws Exception{
         NameEmailVO nameEmailVO = this.createNameEmailVO("tester", "tester@test.com");
-        when(userService.findUsername(nameEmailVO)).thenReturn(null);
+        when(userService.findByNameAndEmail(nameEmailVO)).thenReturn(null);
         mockMvc
                 .perform(post("/guest/find_username")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)

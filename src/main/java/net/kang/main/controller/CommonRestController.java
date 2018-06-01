@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -46,18 +47,19 @@ public class CommonRestController {
     @Secured({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("profile")
     public ResponseEntity<?> profile(Principal principal){
-        UserVO userVO = userService.findByUsername(principal.getName());
+        String currentUser = principal.getName();
+        UserVO userVO = userService.findByUsername(currentUser);
         if(userVO!=null)
             return new ResponseEntity<UserVO>(userVO, HttpStatus.OK);
         else
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Not Found.", HttpStatus.NOT_FOUND);
     }
 
     // 본인 정보 수정
     @Secured({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PutMapping("update")
-    public ResponseEntity<String> update(Principal principal, @RequestBody DetailVO detailVO){
-        if(userService.update(principal.getName(), detailVO)){
+    public ResponseEntity<String> update(Principal principal, @RequestBody DetailVO detailVO) throws ServletException {
+        if(userService.update(principal.getName(), detailVO)) {
             return new ResponseEntity<String>(String.format("User Update is Successed -> %s", principal.getName()), HttpStatus.OK);
         }else{
             return new ResponseEntity<String>("User Update is Failured. User is Not Existed.", HttpStatus.NOT_FOUND);

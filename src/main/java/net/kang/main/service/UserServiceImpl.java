@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
     // 회원 이름과 이메일 정보를 이용해서 존재하는 회원의 ID를 반환한다.
     @Override
-    public String findUsername(final NameEmailVO nameEmailVO){
+    public String findByNameAndEmail(final NameEmailVO nameEmailVO){
         Optional<Detail> detail = detailRepository.findByNameAndEmail(nameEmailVO.getName(), nameEmailVO.getEmail());
 
         // 회원 이름과 E-Mail을 통한 세부 정보가 존재한다면 그 회원의 ID를 반환한다.
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     // 회원의 모든 정보를 수정한다.
     @Override
     @Transactional
-    public boolean update(final String username, final DetailVO detailVO){
+    public boolean update(final String username, final DetailVO detailVO) throws ServletException{
         // 이는 회원의 ID를 이용해서 회원 인증 정보 존재 여부를 파악하기 위한 목적과 비밀번호 변경을 위해 불러오는 역할을 한다.
         Optional<Info> info = infoRepository.findByUsername(username);
 
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
             if(tmpInfo.getPassword().equals(Encryption.encrypt(detailVO.getBeforePassword(), Encryption.MD5)))
                 tmpInfo.setPassword(Encryption.encrypt(detailVO.getNewPassword(), Encryption.MD5));
             else // 비밀번호가 일치하지 않으면 예외를 던진다.
-                throw new AuthenticationServiceException("Before Password Is Wrong.");
+                throw new ServletException("Before Password Is Wrong.");
 
             // 비밀번호 변경이 올바르게 되었으면 갱신한다.
             infoRepository.save(tmpInfo);
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
             else if(detailVO.getEmail().equals(tmpDetail.getEmail())) // 설령 같은 이메일을 주고 받으면 변경하는데 지장은 없게 한다.
                 tmpDetail.setEmail(detailVO.getEmail());
             else
-                throw new AuthenticationServiceException("This E-Mail is Existed. Try Again.");
+                throw new ServletException("This E-Mail is Existed. Try Again.");
 
             // 사용자 세부 정보를 갱신한다.
             detailRepository.save(tmpDetail);
@@ -152,11 +152,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean roleUpdate(String username, String role, boolean isPlus){
+    public boolean roleUpdate(final String username, final String role, final boolean isPlus) throws ServletException{
         Optional<Info> info =  infoRepository.findByUsername(username);
         Optional<Role> tmpRole = roleRepository.findByName(role.toUpperCase());
         if(!tmpRole.isPresent())
-            throw new AuthenticationServiceException("Invalid Roles! Try Again!");
+            throw new ServletException("Invalid Roles! Try Again!");
         if(info.isPresent()) {
             Info tmpInfo = info.get();
             List<Role> roles = tmpInfo.getRoles();
