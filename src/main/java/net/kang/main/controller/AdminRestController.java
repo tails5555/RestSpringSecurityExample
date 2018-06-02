@@ -26,12 +26,14 @@ import java.util.Map;
 public class AdminRestController {
     @Autowired UserService userService;
 
+    // 관리자 접근 확인
     @Secured("ROLE_ADMIN")
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
         return new ResponseEntity<String>("Admin Login is Successed.", HttpStatus.OK);
     }
 
+    // 관리자 모든 회원 조회
     @Secured("ROLE_ADMIN")
     @GetMapping("all_users")
     public ResponseEntity<List<UserVO>> allUsers(){
@@ -40,6 +42,7 @@ public class AdminRestController {
         else return new ResponseEntity<List<UserVO>>(userVOList, HttpStatus.NOT_FOUND);
     }
 
+    // 관리자 회원 수 파악
     @Secured("ROLE_ADMIN")
     @GetMapping("count")
     public ResponseEntity<Long> counting(){
@@ -48,6 +51,7 @@ public class AdminRestController {
         else return new ResponseEntity<Long>(0L, HttpStatus.NOT_FOUND);
     }
 
+    // 관리자 권한 별 회원 수 파악
     @Secured("ROLE_ADMIN")
     @GetMapping("count/role")
     public ResponseEntity<Map<Role, Long>> countingWithRole(){
@@ -55,6 +59,7 @@ public class AdminRestController {
         return new ResponseEntity<>(countMap, HttpStatus.OK);
     }
 
+    // 관리자 회원 강퇴
     @Secured("ROLE_ADMIN")
     @DeleteMapping("delete/{username}")
     public ResponseEntity<String> deleteAnotherUser(@PathVariable("username") String username){
@@ -65,17 +70,19 @@ public class AdminRestController {
         }
     }
 
+    // 관리자 회원 권한 부여
     @Secured("ROLE_ADMIN")
-    @PutMapping("role_plus/{username}/{role}")
-    public ResponseEntity<String> rolePlus(@PathVariable("username") String username, @PathVariable String role) throws ServletException{
+    @PutMapping("role_grant/{username}/{role}")
+    public ResponseEntity<String> roleGrant(@PathVariable("username") String username, @PathVariable String role) throws ServletException{
         userService.roleUpdate(username, role, true);
-        return new ResponseEntity<String>(String.format("User Role Adding Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
+        return new ResponseEntity<String>(String.format("User Role Granting is Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
     }
 
+    // 관리자 회원 권한 회수
     @Secured("ROLE_ADMIN")
-    @PutMapping("role_minus/{username}/{role}")
-    public ResponseEntity<String> roleMinus(@PathVariable("username") String username, @PathVariable String role) throws ServletException {
+    @PutMapping("role_revoke/{username}/{role}")
+    public ResponseEntity<String> roleRevoke(@PathVariable("username") String username, @PathVariable String role) throws ServletException {
         userService.roleUpdate(username, role, false);
-        return new ResponseEntity<String>(String.format("User Role Removing Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
+        return new ResponseEntity<String>(String.format("User Role Revoking is Complete -> Role : %s / User Name : %s", role, username), HttpStatus.OK);
     }
 }

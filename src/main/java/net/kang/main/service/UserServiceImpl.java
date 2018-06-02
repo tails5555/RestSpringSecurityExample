@@ -12,7 +12,6 @@ import net.kang.main.repository.InfoRepository;
 import net.kang.main.repository.RoleRepository;
 import net.kang.main.util.Encryption;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
@@ -151,15 +150,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // 권한 부여 및 회수로, isPlus가 true이면 부여, false이면 회수이다.
     @Override
     public boolean roleUpdate(final String username, final String role, final boolean isPlus) throws ServletException{
         Optional<Info> info =  infoRepository.findByUsername(username);
         Optional<Role> tmpRole = roleRepository.findByName(role.toUpperCase());
+        // 무효한 권한 이름을 입력하면 500 에러를 발생시킨다.
         if(!tmpRole.isPresent())
             throw new ServletException("Invalid Roles! Try Again!");
+        // 회원 정보가 존재한다면 권한 부여 / 회수 작업을 실행한다.
         if(info.isPresent()) {
             Info tmpInfo = info.get();
             List<Role> roles = tmpInfo.getRoles();
+            // isPlus에 따라서 true이면 부여, false이면 회수한다.
             if(isPlus){
                 Role addRole = tmpRole.get();
                 if(!roles.contains(addRole))
@@ -288,6 +291,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    // 모든 회원의 수를 반환한다. 이는 관리자만 진행할 수 있다.
     @Override
     public long count(){
         return infoRepository.count();

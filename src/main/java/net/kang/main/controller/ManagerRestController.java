@@ -21,12 +21,14 @@ import java.util.Map;
 public class ManagerRestController {
     @Autowired UserService userService;
 
+    // 매니저 접근 권한 확인
     @Secured("ROLE_MANAGER")
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){
         return new ResponseEntity<String>("Manager Login is Successed.", HttpStatus.OK);
     }
 
+    // 매니저 수와 일반 회원 수 파악
     @Secured("ROLE_MANAGER")
     @GetMapping("count/role")
     public ResponseEntity<Map<Role, Long>> counting(){
@@ -34,6 +36,7 @@ public class ManagerRestController {
         return new ResponseEntity<>(countMap, HttpStatus.OK);
     }
 
+    // 매니저 일반 회원 강퇴
     @Secured("ROLE_MANAGER")
     @DeleteMapping("delete/{username}")
     public ResponseEntity<String> deleteAnotherUser(@PathVariable("username") String username){

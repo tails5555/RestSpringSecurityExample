@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// USER 권한을 가진 REST Controller를 확인하는 테스팅 클래스이다.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {net.kang.main.config.SecurityConfig.class})
 @WebAppConfiguration
@@ -37,14 +38,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserRestControllerTest {
     MockMvc mockMvc;
 
+    // Security Configuration을 위해 이 요소들은 Mock으로 설정해둬야 한다.
     @Mock AuthProvider authProvider;
     @Mock AuthenticationEntryPoint authenticationEntryPoint;
     @Mock AuthLoginSuccessHandler authLoginSuccessHandler;
     @Mock MyAccessDeniedHandler myAccessDeniedHandler;
 
+    // UserRestController는 Mock으로 설정하지 않는다.
     @InjectMocks UserRestController userRestController;
     @Autowired Filter springSecurityFilterChain;
 
+    // 테스팅 전에 초기화하는 과정. 실행 결과는 항상 출력되도록 설정한다.
     @Before
     public void setUp() throws Exception{
         this.mockMvc = MockMvcBuilders
@@ -52,9 +56,11 @@ public class UserRestControllerTest {
                 .alwaysDo(print())
                 .apply(SecurityMockMvcConfigurers.springSecurity(springSecurityFilterChain))
                 .build();
+
         MockitoAnnotations.initMocks(this);
     }
 
+    // USER 권한을 가진 사람에 대해 접근 가능을 확인한다.
     @Test
     @WithMockUser(username="tester", password = "test123", roles = {"USER"})
     public void user_access_process_success() throws Exception{
@@ -63,6 +69,7 @@ public class UserRestControllerTest {
                 .andExpect(status().isOk());
     }
 
+    // ADMIN 권한을 가진 사람에 대해 403 에러를 발생하는지 확인한다.
     @Test
     @WithMockUser(username="tester", password = "test123", roles = {"ADMIN"})
     public void user_access_process_forbidden() throws Exception{
@@ -72,6 +79,7 @@ public class UserRestControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    // 비회윈인 사람에 대해 401 에러를 발생하는지 확인한다.
     @Test
     @WithAnonymousUser
     public void user_access_process_unauthorized() throws Exception{

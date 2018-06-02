@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserRestController {
     @Autowired UserService userService;
 
-    // USER ROLE로 접속할 때 HELLO WORLD 정도 출력하는 실험.
+    // 일반 회원 접근 권한 확인
     @Secured("ROLE_USER")
     @GetMapping("login_process")
     public ResponseEntity<String> loginProcess(){

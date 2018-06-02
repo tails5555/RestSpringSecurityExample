@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -43,23 +42,29 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// 비회원을 위한 REST Controller를 확인하는 테스팅 클래스이다.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {net.kang.main.config.SecurityConfig.class})
 @WebAppConfiguration
-@SpringBootTest
+@SpringBootTest(classes = {net.kang.main.RestSpringSecurityApplication.class})
 public class GuestRestControllerTest {
     MockMvc mockMvc;
 
-    @MockBean AuthProvider authProvider;
-    @MockBean AuthenticationEntryPoint authenticationEntryPoint;
-    @MockBean AuthLoginSuccessHandler authLoginSuccessHandler;
-    @MockBean MyAccessDeniedHandler myAccessDeniedHandler;
+    // Security Configuration을 위해 이 요소들은 Mock으로 설정해둬야 한다.
+    @Mock AuthProvider authProvider;
+    @Mock AuthenticationEntryPoint authenticationEntryPoint;
+    @Mock AuthLoginSuccessHandler authLoginSuccessHandler;
+    @Mock MyAccessDeniedHandler myAccessDeniedHandler;
 
-    @InjectMocks GuestRestController guestRestController;
+    // UserService는 별도로 Mock으로 설정한다.
     @Mock UserService userService;
+
+    // GuestRestController는 Mock으로 설정하지 않는다.
+    @InjectMocks GuestRestController guestRestController;
 
     @Autowired Filter springSecurityFilterChain;
 
+    // 일반 객체를 JSON으로 반환하기 위하여 LocalDateTime 설정을 따로 한 뒤에 반환해야 한다.
     private String jsonStringFromObject(Object object) throws JsonProcessingException {
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
@@ -69,6 +74,7 @@ public class GuestRestControllerTest {
         return objectMapper.writeValueAsString(object);
     }
 
+    // SignVO 객체를 만들기 위한 문장
     private SignVO createSignVO(String username, String password_1, String password_2, String name, String email, LocalDateTime birthday, String address){
         SignVO signVO = new SignVO();
         signVO.setUsername(username);
@@ -82,6 +88,7 @@ public class GuestRestControllerTest {
         return signVO;
     }
 
+    // NameEmailVO를 만들기 위한 문장
     private NameEmailVO createNameEmailVO(String name, String email){
         NameEmailVO nameEmailVO = new NameEmailVO();
         nameEmailVO.setName(name);
@@ -89,6 +96,7 @@ public class GuestRestControllerTest {
         return nameEmailVO;
     }
 
+    // 테스팅 전에 초기화하는 과정. 실행 결과는 항상 출력되도록 설정한다.
     @Before
     public void setUp() throws Exception{
         this.mockMvc = MockMvcBuilders
@@ -97,9 +105,11 @@ public class GuestRestControllerTest {
                 .alwaysDo(print())
                 .apply(SecurityMockMvcConfigurers.springSecurity(springSecurityFilterChain))
                 .build();
+
         MockitoAnnotations.initMocks(this);
     }
 
+    // Guest 처음 페이지 접근 테스팅
     @Test
     public void guest_main() throws Exception {
         mockMvc
@@ -108,6 +118,7 @@ public class GuestRestControllerTest {
                 .andReturn();
     }
 
+    // 회원 가입 성공 여부 테스팅
     @Test
     public void guest_sign_success() throws Exception{
         SignVO signVO = this.createSignVO("test1", "testing", "testing", "tester", "tester@test.com", LocalDateTime.now(), "suwon");
@@ -121,6 +132,7 @@ public class GuestRestControllerTest {
                 .andExpect(status().isCreated());
     }
 
+    // 회원 가입 실패 여부 테스팅
     @Test
     public void guest_sign_failure() throws Exception{
         SignVO signVO = this.createSignVO("test2", "testin", "testing", "tester", "tester@test.com", LocalDateTime.now(), "suwon");
@@ -134,6 +146,7 @@ public class GuestRestControllerTest {
                 .andExpect(status().isNotModified());
     }
 
+    // 회원 가입 중 예외 처리 테스팅
     @Test(expected = ServletException.class)
     public void guest_sign_exception() throws Exception{
         SignVO signVO = this.createSignVO("test3", "testing", "testing", "tester", "tester@test.com", LocalDateTime.now(), "suwon");
@@ -145,6 +158,7 @@ public class GuestRestControllerTest {
                 ).andExpect(status().isInternalServerError());
     }
 
+    // 회원 ID 조회 성공 테스팅
     @Test
     public void guest_find_username_success() throws Exception{
         NameEmailVO nameEmailVO = this.createNameEmailVO("tester", "tester@test.com");
@@ -156,6 +170,7 @@ public class GuestRestControllerTest {
                 ).andExpect(status().isOk());
     }
 
+    // 회원 ID 조회 실패 테스팅
     @Test
     public void guest_find_username_failure() throws Exception{
         NameEmailVO nameEmailVO = this.createNameEmailVO("tester", "tester@test.com");
