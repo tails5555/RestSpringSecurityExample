@@ -2,9 +2,9 @@
 
 ## Issues
 - `Spring Security`를 `REST API`로 접목하는 연습을 진행합니다.
-- `Spring Security`에 있는 추가적인 설정을 공부하는 계기를 가져봅니다.
+- `AuthenticationEntryPoint`, `AuthenticationSuccessHandler`, `AuthenticationFailureHandler`, `AccessDeniedHandler` 등 여태 동안 몰랐던 Handler Component들을 다뤄볼 수 있는 기회를 가집니다.
 - `Spring Data JPA`의 변동 사항을 반영하여 `AuthenticationProvider`에서 쓸 수 있도록 합니다.
-- `JUnit`, `Mockito Mock MVC`를 이용해서 `Spring Security`를 테스팅하는 연습을 진행합니다.
+- `JUnit`, `Mockito Mock MVC`를 이용해서 `Spring Security`을 적용한 Controller 클래스를 테스팅하는 연습을 진행합니다.
 
 ## Relational Database Structure
 
@@ -14,7 +14,7 @@ RDBMS는 `MySQL Workbench`를 이용하였으며, Schema 이름은 `security_exa
 
 - `authinfo`
     - 사용자가 인증할 수 있는 username, password 정보가 들어있습니다.
-    - password는 Message Digest 5 암호화 알고리즘을 기반으로 암호화를 진행하고 저장하였습니다.
+    - password는 Message Digest 5 암호화 알고리즘을 적용하고 저장하였습니다.
 - `authrole`
     - 사용자에게 주어지는 권한의 종류를 저장합니다.
     - 권한 종류는 `USER`, `MANAGER`, `ADMIN` 3가지로 구성이 됩니다.
@@ -101,8 +101,57 @@ Spring Security에서 사용자 인증 정보(username, password)를 이용한 �
 
 ![login_sequence](/image/login_sequence.png)
 
+1. 사용자가 로그인을 진행할 때, Basic Authentication(with User ID, Password)을 이용합니다.
 
-## Screenshot
+    - 만일 사용자 인증을 거치지 않은 비회원에 대해서는 401 Unauthorized Status를 넘기고 Redirect를 진행합니다.
+    
+    - 이 역할을 하는 Handler는 `AuthenticationEntryPoint`입니다.
+
+2. AuthenticationProvider를 통해 사용자의 권한을 부여한 후에 Http Basic을 이용하여 Token을 부여하고 현재 사용자 로그인 정보를 session에 저장합니다.
+
+3. 사용자 권한이 현재 요청하는 URI에 적합한가에 대해 확인 여부를 진행하고, 올바르지 않으면 403 Forbidden Status로 넘기면서 Redirect를 진행합니다.
+    
+    - 이 역할을 하는 Handler는 `AccessDeniedHandler` 입니다.
+    
+4. 접근 성공이 완료되면 AuthenticationSuccessHandler를 통해서 200 OK Status를 반환하고 정상적으로 이용이 가능하게 합니다.
+
+    - 접근 권한을 관리하는 Configuration Class에 자세히 기재되어 있으니 이를 참고하시어 문제 발생이 없으시길 바라겠습니다.
+
+## REST API Screenshot
+
+![REST_Screenshot01](/image/REST_Screenshot01.png)
+
+USER 권한을 가진 사람 로그인 작업
+
+![REST_Screenshot02](/image/REST_Screenshot02.png)
+
+회원 정보 조회
+
+![REST_Screenshot03](/image/REST_Screenshot03.png)
+
+로그아웃 작업
+
+![REST_Screenshot04](/image/REST_Screenshot04.png)
+
+회원 가입 진행
+
+![REST_Screenshot05](/image/REST_Screenshot05.png)
+
+회원 가입 완료 후 회원 등록 확인
+
+![REST_Screenshot06](/image/REST_Screenshot06.png)
+
+회원 가입 완료 후 Basic Authentication 등록 확인
+
+![REST_Screenshot07](/image/REST_Screenshot07.png)
+
+회원 가입 완료 후 권한 부여 확인. roleId에서 1은 Admin, 2는 Manager, 3은 User이다. 
+
+## JUnit Test Screenshot
+
+![JUnit_Result01](/image/JUnit_Result01.jpg)
+
+![JUnit_Result02](/image/JUnit_Result02.jpg)
 
 ## Author 
 
