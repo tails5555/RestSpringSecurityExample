@@ -153,6 +153,7 @@ USER 권한을 가진 사람 로그인 작업
 
 ![JUnit_Result02](/image/JUnit_Result02.jpg)
 
+JUnit 실행 결과에 대해서 [JUnit_Test_Result.pdf](https://github.com/tails5555/RestSpringSecurityExample/JUnit_Test_Result.pdf)을 참고하셔도 좋습니다.
 ## Author 
 
 - [강인성](https://github.com/tails5555) (tails5555)
